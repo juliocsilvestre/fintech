@@ -1,41 +1,30 @@
-import React from "react";
-import Input from "./Input";
-
-type Venda = {
-	id: string;
-	nome: string;
-	status: string;
-};
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./Components/Header";
+import Sidenav from "./Components/Sidenav";
+import { DataContextProvider } from "./Context/DataContext";
+import Resumo from "./Pages/Resumo";
+import Vendas from "./Pages/Vendas";
+import Venda from "./Pages/Venda";
+import "./Style.css";
 
 function App() {
-	const [data, setData] = React.useState<null | Venda[]>(null);
-	const [inicio, setInicio] = React.useState("");
-	const [final, setFinal] = React.useState("");
-
-	React.useEffect(() => {
-		if (inicio !== "" && final !== "")
-			fetch(`https://data.origamid.dev/vendas/?inicio=${inicio}&final=${final}`)
-				.then((r) => r.json())
-				.then((json) => setData(json as Venda[]))
-				.catch((error) => console.log(error));
-	}, [inicio, final]);
-
-	return (
-		<div>
-			<div>
-				<Input label="Início" setState={setInicio} value={inicio} type="date" />
-				<Input label="Final" setState={setFinal} value={final} type="date" />
-			</div>
-			<ul>
-				{data &&
-					data.map((venda) => (
-						<li key={venda.id}>
-							{venda.nome}: {venda.status}
-						</li>
-					))}
-			</ul>
-		</div>
-	);
+  return (
+    <BrowserRouter>
+      <DataContextProvider>
+        <div className="container">
+          <Sidenav />
+          <main>
+            <Header />
+            <Routes>
+              <Route path="/" element={<Resumo />} />
+              <Route path="/vendas" element={<Vendas />} />
+              <Route path="/vendas/:id" element={<Venda />} />
+            </Routes>
+          </main>
+        </div>
+      </DataContextProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App;
